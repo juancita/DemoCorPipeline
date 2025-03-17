@@ -1,0 +1,7 @@
+stages:
+- stage: 
+  displayName: 'OWASP ZAP analisis'
+    #dependsOn: # pendiente nombre de la tarea que levanta la api en docker
+    #condition: succeeded()
+  jobs:
+    - template: ../jobs/zap-job.yml

@@ -1,0 +1,10 @@
+jobs:
+  - job: Maven_Builder
+    displayName: "Compilación con Maven"
+    condition: and(eq(variables['Build.Repository.Name'], 'ssfin-front111111'), eq(variables['Build.SourceBranch'], 'refs/heads/deploy-example'))
+    steps:
+    - script: |
+        export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.25.0.9-3.el9.x86_64
+        export PATH=$JAVA_HOME/bin:$PATH
+        mvn clean install
+      displayName: "Compilación con Maven"

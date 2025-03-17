@@ -1,0 +1,44 @@
+variables:
+  - ${{if eq(variables['Build.SourceBranch'], 'refs/heads/main')}}:
+      - group: gv-serafin-prod
+  - ${{if eq(variables['Build.SourceBranch'], 'refs/heads/qa')}}:
+      - group: gv-serafin-qa
+  - ${{if eq(variables['Build.SourceBranch'], 'refs/heads/rollback-example')}}:
+      - group: gv-serafin-develop
+  - name: DOCKER_IMAGE_NAME
+    value: $(Build.Repository.Name)
+  - name: IMAGE_PATH
+    value: /opt/register-container/$(Build.Repository.Name)/deploy-example
+  - name: PUBLISH_PATH
+    value: /opt/$(Build.Repository.Name)/
+  - name: VERSION
+    value: 33960
+
+stages:
+  - stage: RollBack_Docker
+    displayName: "Desplegar en el Servidor"
+    jobs:
+      - job: Deploy_To_Server
+        displayName: "Cargar Imagen y Reiniciar Docker Compose"
+        steps:
+          - script: |
+              scp -i ~/.ssh/id_rsa $(IMAGE_PATH)/$(DOCKER_IMAGE_NAME)-$(VERSION).tar $(SERVER_USER)@$(SERVER_DEPLOY):$(PUBLISH_PATH) && \
+              docker system prune -a -f
+            displayName: "Transferir Imagen Docker"
+
+          - script: |
+              ssh -i ~/.ssh/id_rsa $(SERVER_USER)@$(SERVER_DEPLOY) "
+                docker load < $(PUBLISH_PATH)$(DOCKER_IMAGE_NAME)-$(VERSION).tar && \
+                docker tag $(DOCKER_IMAGE_NAME):$(VERSION) $(DOCKER_IMAGE_NAME):latest
+                rm -f $(PUBLISH_PATH)$(DOCKER_IMAGE_NAME)-$(VERSION).tar
+              "
+            displayName: "Cargar Imagen Docker en el Servidor"
+
+          - script: |
+              ssh -i ~/.ssh/id_rsa $(SERVER_USER)@$(SERVER_DEPLOY) "
+                cd $(PUBLISH_PATH) && \
+                docker compose down && \
+                docker compose up -d --force-recreate && \
+                docker system prune -a -f
+              "
+            displayName: "Reiniciar Docker Compose"

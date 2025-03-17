@@ -1,0 +1,11 @@
+jobs:
+- job: 'RunTests'
+  displayName: 'Run Tests and Coverage'
+  steps:
+    - template: ../steps/run-tests.yml
+
+    - task: PublishCodeCoverageResults@2
+      displayName: 'Publish code coverage report'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/coverage.cobertura.xml'

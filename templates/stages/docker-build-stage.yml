@@ -1,0 +1,30 @@
+stages:
+  - stage: Docker_Build
+    displayName: "Construcción de Imagen Docker"
+    dependsOn: InstallDocker
+    condition: succeeded()
+    jobs:
+      - job: Build_Docker
+        displayName: "Crear Imagen Docker"
+        steps:
+          - script: |
+              echo "Verificando que Docker esté disponible..."
+              docker version
+              docker info
+            displayName: "Verificar instalación de Docker"
+
+          - script: |
+              echo "Construyendo la imagen de Docker..."
+              docker build -t $(DOCKER_IMAGE_NAME):$(VERSION) .
+            displayName: "Construir Imagen Docker"
+
+          - script: |
+              docker save $(DOCKER_IMAGE_NAME):$(VERSION) > $(IMAGE_PATH)/$(DOCKER_IMAGE_NAME)-$(VERSION).tar
+              echo "Imagen guardada en $(IMAGE_PATH)/$(DOCKER_IMAGE_NAME)-$(VERSION).tar"
+            displayName: "Guardar Imagen Docker"
+
+          - task: PublishBuildArtifacts@1
+            inputs:
+              pathToPublish: "$(IMAGE_PATH)/$(DOCKER_IMAGE_NAME)-$(VERSION).tar"
+              artifactName: "DockerImage"
+            displayName: "Publicar(guardar) Imagen Docker"

@@ -1,0 +1,6 @@
+stages:
+  - stage: Deploy
+    displayName: "Despliegue en Azure App Services"
+    dependsOn: acr-publish-stage
+    jobs:
+      - template: ../jobs/deploy-job.yml

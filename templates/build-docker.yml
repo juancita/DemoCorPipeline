@@ -1,0 +1,3 @@
+stages:
+  - template: stages/docker-build.yml
+  - template: stages/security-scan.yml

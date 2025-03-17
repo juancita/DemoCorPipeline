@@ -1,0 +1,7 @@
+jobs:
+  - job: OWASP_ZAP_Scan
+    displayName: 'OWASP ZAP Scan'
+    dependsOn:  # pendiente nombre de la tarea que levanta la api en docker
+    condition: succeeded()
+    steps:
+      - template: '../steps/zap-security-test.yml'

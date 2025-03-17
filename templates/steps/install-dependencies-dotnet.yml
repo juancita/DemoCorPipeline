@@ -1,0 +1,14 @@
+steps:
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core'
+    inputs:
+      packageType: 'sdk'
+      version: '8.0.x'
+      installationPath: '$(Agent.ToolsDirectory)/dotnet'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Download Dependencies'
+    inputs:
+      command: 'restore'
+      projects: '*.sln'
+      feedsToUse: 'select'

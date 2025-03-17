@@ -1,0 +1,7 @@
+stages:
+  - stage: ACR_Publish
+    displayName: "Publicación en Azure Container Registry"
+    dependsOn: Security_Scan
+    condition: succeeded()
+    jobs:
+      - template: ../jobs/acr-publish-job.yml

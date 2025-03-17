@@ -1,0 +1,7 @@
+stages:
+  - stage: Build
+    displayName: "Compilar API"
+    jobs:
+      - template: ../jobs/build-job.yml
+
+# se llama al job

@@ -1,0 +1,27 @@
+jobs:
+  - job: Angular16_Builder
+    displayName: "Compilación con Node.js y Angular 16"
+    condition: and(eq(variables['Build.Repository.Name'], 'toe-frontend'), eq(variables['Build.SourceBranch'], 'refs/heads/deploy-example'))
+    steps:
+      - script: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" 
+          nvm install 18.16.0
+          nvm use 18.16.0
+
+          # Instalar Angular localmente en el proyecto
+          cd $(Build.SourcesDirectory)
+          npm install @angular/cli@16.2
+
+          # Instalar dependencias de Angular (si aún no se han instalado)
+          npm install
+
+          # Ejecutar la compilación de Angular
+          ./node_modules/.bin/ng version
+          ./node_modules/.bin/ng build -c production
+
+          # export CHROME_BIN=/usr/bin/google-chrome
+          # npm install --save-dev karma-chrome-launcher
+          # npm ci
+          # npm run test -- --no-watch --browsers=ChromeHeadlessCI
+        displayName: "Compilación con Node.js y Angular 16.2.0"

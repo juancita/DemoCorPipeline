@@ -1,0 +1,10 @@
+jobs:
+  - job: Gradle_Builder
+    displayName: "Compilación con Gradle"
+    condition: and(eq(variables['Build.Repository.Name'], 'ssfin'), eq(variables['Build.SourceBranch'], 'refs/heads/deploy-example'))
+    steps:
+      - script: |
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-11.0.25.0.9-3.el9.x86_64
+          export PATH=$JAVA_HOME/bin:$PATH
+          /opt/gradle/bin/gradle clean test
+        displayName: "Compilar con Gradle 6.0.1"

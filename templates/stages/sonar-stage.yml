@@ -1,0 +1,5 @@
+stages:
+  - stage: SonarQubeAnalysis
+    displayName: "Análisis Estático con SonarQube"
+    jobs:
+      - template: ../jobs/sonar-job-dotnet.yml

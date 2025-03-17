@@ -1,0 +1,8 @@
+stages:
+  - stage: Build_CoverageTests
+    displayName: "Compilación con Gradle o Maven y angular 10 o 16"
+    jobs:
+      - template: jobs/gradle-builder.yml
+      - template: jobs/maven-builder.yml
+      - template: jobs/serafinfront-builder.yml
+      - template: jobs/angular16-builder.yml

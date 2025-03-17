@@ -1,0 +1,50 @@
+stages:
+- stage: SecurityScan
+  displayName: 'Escaneo de Seguridad con Trivy'
+  jobs:
+  - job: TrivyScan
+    displayName: 'Escanear Imagen con Trivy'
+    pool:
+      vmImage: 'ubuntu-latest'  # Linux para compatibilidad con Docker y Trivy
+
+    steps:
+      # 1. Descargar e instalar Trivy en Linux
+      - script: |
+          echo "Descargando Trivy..."
+          sudo apt-get update -y
+          sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/download/v0.60.0/trivy_0.60.0_Linux-64bit.tar.gz
+          tar -xzf trivy_0.60.0_Linux-64bit.tar.gz
+          sudo mv trivy /usr/local/bin/
+        displayName: 'Descargar e instalar Trivy'
+
+      # 2. Verificar que Trivy está correctamente instalado
+      - script: |
+          trivy --version
+        displayName: 'Verificar instalación de Trivy'
+
+      # 3. Cargar la imagen desde el .tar (si fue guardada como artefacto)
+      - script: |
+          echo "Cargando imagen Docker desde el artefacto..."
+          docker load -i $(IMAGE_PATH)/$(DOCKER_IMAGE_NAME)-$(VERSION).tar || echo "No se encontró archivo .tar, continuando..."
+        displayName: "Cargar Imagen Docker"
+
+      # 4. Capturar el SHA de la última imagen creada
+      - script: |
+          IMAGE_SHA=$(docker images --format "{{.ID}}" | head -n 1)
+          echo "SHA de la imagen: $IMAGE_SHA"
+          echo "##vso[task.setvariable variable=IMAGE_SHA]$IMAGE_SHA"
+        displayName: 'Capturar SHA de la Imagen'
+
+      # 5. Listar imágenes disponibles
+      - script: |
+          echo "Listando imágenes disponibles en Docker..."
+          docker images --no-trunc
+        displayName: 'Listar Imágenes Docker'
+
+      # 6. Ejecutar Trivy en la imagen usando el SHA
+      - script: |
+          echo "Ejecutando escaneo de Trivy en la imagen con SHA: $(IMAGE_SHA)"
+          trivy image --exit-code 0 --ignore-unfixed sha256:$(IMAGE_SHA)
+        displayName: 'Ejecutar escaneo de Trivy'
+

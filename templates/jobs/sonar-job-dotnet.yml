@@ -1,0 +1,75 @@
+jobs:
+- job: 'SonarQubeAnalysis'
+  displayName: 'SonarQube Analysis'
+  steps:
+    - task: SonarQubePrepare@6
+      inputs:
+        SonarQube: '$(SERVICE_CONECTION_SONAR)'
+        scannerMode: 'MSBuild'
+        projectKey: '$(Build.Repository.Name)'
+        projectName: '$(Build.Repository.Name)'
+        extraProperties: |
+          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/TestResults/coverage.opencover.xml
+          sonar.qualitygate.wait=false
+          sonar.qualitygate.timeout=300
+          sonar.test.exclusions=**/*.json,**/*.yml,**/*.config
+          sonar.exclusions=**/*.json,**/*.yml,**/*.config
+          sonar.coverage.exclusions=**/*.json,**/*.yml,**/*.config
+
+    - script: |
+        echo $(SONARQUBE_SCANNER_PARAMS)
+      displayName: 'Check sonar env variable pre change'
+          
+    - powershell: |
+        $params = "$env:SONARQUBE_SCANNER_PARAMS" -replace '"sonar.branch.name":"[\w,/,-]*"\,?'
+        Write-Host "##vso[task.setvariable variable=SONARQUBE_SCANNER_PARAMS]$params"
+      displayName: 'Delete sonar branch'
+
+    - script: |
+        echo $(SONARQUBE_SCANNER_PARAMS)
+      displayName: 'Check sonar env variable post change'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Build Package'
+      inputs:
+          command: 'build'
+          projects: '*.sln' 
+          arguments: '--configuration Release'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Dotnet Test Cobertura'
+      inputs:
+        command: 'test'
+        arguments: >
+          --configuration Release
+          /p:CollectCoverage=true
+          /p:CoverletOutputFormat=cobertura
+          /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/
+          /p:Exclude='[ApiSiniestrosAxaText]*'
+        publishTestResults: false
+        projects: '*.sln'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Dotnet Test OpenCover'
+      inputs:
+        command: 'test'
+        arguments: >
+          --configuration Release
+          /p:CollectCoverage=true
+          /p:CoverletOutputFormat=opencover
+          /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/
+          /p:Exclude='[ApiSiniestrosAxaText]*'
+        publishTestResults: false
+        projects: '*.sln'
+
+    - task: SonarQubeAnalyze@6
+
+    - task: SonarQubePublish@6
+      inputs:
+        pollingTimeoutSec: '300'
+
+    - task: PublishCodeCoverageResults@2
+      displayName: 'Publish code coverage report'
+      inputs:
+        codeCoverageTool: 'Cobertura'
+        summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/coverage.cobertura.xml'

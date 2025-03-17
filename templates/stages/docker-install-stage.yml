@@ -1,0 +1,48 @@
+stages:
+- stage: BuildDockerImage
+  displayName: 'Instalar y Construir Imagen Docker'
+  jobs:
+  - job: SetupBuild
+    displayName: 'Instalar Docker y Compilar Imagen'
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      # 1. Instalar Docker (si no está instalado)
+      - script: |
+          if ! command -v docker &> /dev/null; then
+            echo "Docker no encontrado, instalando..."
+            sudo apt-get update
+            sudo apt-get install -y docker.io
+            echo "Docker instalado correctamente."
+          else
+            echo "Docker ya está instalado."
+          fi
+        displayName: 'Instalar Docker en Ubuntu'
+
+      # 2. Verificar instalación de Docker
+      - script: |
+          docker version
+        displayName: 'Verificar instalación de Docker'
+
+      # 3. Validar la existencia del Dockerfile
+      - script: |
+          dockerfilePath="$(Build.SourcesDirectory)/Dockerfile"
+
+          echo "Buscando Dockerfile en: $dockerfilePath"
+          if [ -f "$dockerfilePath" ]; then
+            echo "Dockerfile encontrado en: $dockerfilePath"
+            echo "##vso[task.setvariable variable=dockerfilePath]$dockerfilePath"
+          else
+            echo "Dockerfile NO encontrado en la raíz."
+            exit 1
+          fi
+        displayName: 'Validar presencia del Dockerfile'
+
+      # 4. Construir la imagen Docker usando el Dockerfile
+      - script: |
+          echo "Usando Dockerfile en: $(dockerfilePath)"
+          echo "Usando build path: $(Build.SourcesDirectory)"
+
+          docker build -t miimagen:1.0.0 -f "$(dockerfilePath)" "$(Build.SourcesDirectory)"
+        displayName: 'Construir Imagen Docker'

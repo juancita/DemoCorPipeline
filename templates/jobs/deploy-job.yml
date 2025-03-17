@@ -1,0 +1,5 @@
+jobs:
+  - job: Deploy
+    displayName: "Desplegar aplicación en Azure"
+    steps:
+      - template: ../steps/deploy-appservices.yml

@@ -1,0 +1,5 @@
+jobs:
+  - job: mendbolt_analysis
+    displayName: "Análisis de Composición de Software (Mend Bolt)"
+    steps:
+      - template: ../steps/mendbolt-scan.yml

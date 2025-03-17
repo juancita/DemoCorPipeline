@@ -1,0 +1,5 @@
+jobs:
+  - job: securityscanproject
+    displayName: "Escanear Código con Trivy"
+    steps:
+      - template: ../steps/security-scan.yml

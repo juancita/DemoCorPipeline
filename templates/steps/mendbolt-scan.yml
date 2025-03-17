@@ -1,0 +1,37 @@
+steps:
+  - task: whitesource.whiteSource-bolt-v2.bolt.wss.WhiteSource@21
+    displayName: "🔍 Análisis Avanzado de Vulnerabilidades - Mend Bolt"
+    inputs:
+      cwd: '$(System.DefaultWorkingDirectory)'
+      projectName: 'Demo-Api-Testing'
+      
+      # 📌 Habilitar Reportes Avanzados con Clasificación Completa
+      enableDetailedReport: true
+      enableInventoryReport: true               # 📝 Reporte con TODAS las dependencias
+      enableDependencyTreeReport: true          # 🌳 Árbol de dependencias con riesgos
+      enableVulnerabilityReport: true           # 📊 Reporte de vulnerabilidades
+      enableEnableCveDetails: true              # 🔎 Descripción detallada de cada CVE
+      enableEnableFixRecommendations: true      # 🔧 Recomendaciones de solución
+      enableSecurityAlerts: true                # 🚨 Alertas de seguridad en tiempo real  
+
+      # 🛡️ Clasificación Completa de Vulnerabilidades
+      enableCvssThreshold: true
+      cvssSeverityThreshold: '3.0'              # 📊 Reportar CVSS >= 3.0 (incluye Medias)
+      enableCriticalSeverityOnly: false         # ✅ Reportar TODAS las vulnerabilidades
+      enableFailOnCriticalSeverity: true        # ❌ Falla el pipeline si hay críticas
+      enableFailOnHighSeverity: true            # ❌ Falla el pipeline si hay altas
+      enableFailOnMediumSeverity: false         # ⚠️ No falla el pipeline en vulnerabilidades medias
+      enableFailOnLowSeverity: false            # ⚠️ No falla el pipeline en vulnerabilidades bajas
+
+      # 🚀 Integración con Bases de Datos de Seguridad
+      enableIntegrationToVulnerabilityDB: true  # 📡 Sincronización con bases de CVEs
+      enableIntegrationToThreatIntel: true      # 🕵️ Análisis de amenazas en tiempo real
+
+      # 📤 Generación de Reportes Avanzados
+      reportFormat: 'pdf, json, html, csv'      # 📑 Reportes en varios formatos
+      reportOutputPath: '$(Build.ArtifactStagingDirectory)/MendBoltReports'  
+
+    continueOnError: false                      # 🚨 Falla el pipeline si hay vulnerabilidades críticas
+
+
+

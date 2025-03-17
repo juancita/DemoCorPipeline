@@ -1,0 +1,32 @@
+steps:
+  - task: DotNetCoreCLI@2
+    displayName: 'Dotnet Test Cobertura'
+    inputs:
+      command: 'test'
+      arguments: >
+        --configuration Release
+        /p:CollectCoverage=true
+        /p:CoverletOutputFormat=cobertura
+        /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/
+        /p:Exclude='[ApiSiniestrosAxaText]*'
+      publishTestResults: false
+      projects: '*.sln'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Dotnet Test OpenCover'
+    inputs:
+      command: 'test'
+      arguments: >
+        --configuration Release
+        /p:CollectCoverage=true
+        /p:CoverletOutputFormat=opencover
+        /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/
+        /p:Exclude='[ApiSiniestrosAxaText]*'
+      publishTestResults: false
+      projects: '*.sln'
+
+  - task: PublishCodeCoverageResults@2
+    displayName: 'Publish Code Coverage Report'
+    inputs:
+      codeCoverageTool: 'Cobertura'
+      summaryFileLocation: '$(Build.SourcesDirectory)/TestResults/coverage.cobertura.xml'

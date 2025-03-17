@@ -1,0 +1,33 @@
+steps:
+- powershell: |
+    if (-not (Get-Command "docker" -ErrorAction SilentlyContinue)) {
+      Write-Host "Docker no está instalado. Instalando Docker..."
+      Invoke-WebRequest -Uri "https://get.docker.com" -OutFile "get-docker.ps1"
+      Start-Process -FilePath "powershell" -ArgumentList "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "get-docker.ps1" -Wait
+    } else {
+      Write-Host "Docker ya está instalado."
+    }
+    docker run --rm -v ZAPReport:/zap/wrk/:rw --user root -t zaproxy/zap-stable zap-api-scan.py -t ENDPONT_PENDIENTE -r reporte-escaneo-api.html -I
+  displayName: Verificar e instalar Docker
+
+
+#  - task: UseDotNet@2
+#    displayName: 'Use .NET SDK $(dotnetSdkVersion)'
+#    inputs:
+#        packageType: 'sdk'
+#        version: '5.x'
+#        installationPath: $(Agent.ToolsDirectory)/dotnet
+
+#  - script: |
+#        docker version
+#    displayName: 'Verificar instalación de Docker'
+
+#  - script: |
+#        docker run -v $(Build.SourcesDirectory):/zap/wrk/:rw -t zaproxy/zap-stable zap-full-scan.py -t PENDIENTE_PUERTO_DE_EJECUCION_DE_LA_API -r zap_report.html
+#    displayName: 'Run OWASP ZAP Scan'
+
+#  - task: PublishPipelineArtifact@1
+#    displayName: 'Publish ZAP Report'
+#    inputs:
+#        targetPath: '$(Build.SourcesDirectory)/zap_report.html'
+#        artifact: 'ZAP Report'

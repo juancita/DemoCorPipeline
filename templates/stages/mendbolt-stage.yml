@@ -1,0 +1,5 @@
+stages:
+  - stage: mendbolt_analysis
+    displayName: "Análisis de Composición de Software (Mend Bolt)"
+    jobs:
+      - template: ../jobs/mendbolt-job.yml

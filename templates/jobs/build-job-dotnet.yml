@@ -1,0 +1,12 @@
+jobs:
+- job: 'Build'
+  displayName: 'Build Job'
+  steps:
+    - template: ../steps/install-dependencies-dotnet.yml
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Build Package'
+      inputs:
+        command: 'build'
+        projects: '*.sln'
+        arguments: '--configuration Release'

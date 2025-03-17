@@ -1,0 +1,11 @@
+steps:
+  - script: |
+      # Login en ACR
+      az acr login --name $(ACR_NAME)
+      
+      # Etiquetar la imagen con la ruta completa del ACR
+      docker tag $(DOCKER_IMAGE_NAME):$(VERSION) $(ACR_NAME).azurecr.io/$(DOCKER_IMAGE_NAME):$(VERSION)
+      
+      # Enviar la imagen al ACR
+      docker push $(ACR_NAME).azurecr.io/$(DOCKER_IMAGE_NAME):$(VERSION)
+    displayName: "Publicar Imagen en ACR"

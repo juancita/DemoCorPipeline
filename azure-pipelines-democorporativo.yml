@@ -1,0 +1,21 @@
+variables:
+  - ${{if eq(variables['Build.SourceBranch'], 'refs/heads/main')}}:
+      - group: gv-service-claims-api-prod
+
+
+
+trigger:
+  branches:
+    include:
+      - main
+
+stages:
+- template: templates/stages/build-stage-api.yml
+- template: templates/stages/sonar-stage.yml
+- template: templates/stages/mendbolt-stage.yml
+- template: templates/stages/docker-install-stage.yml
+- template: templates/stages/security-scan-stage.yml
+#- template: templates/stages/acr-publish-stage.yml
+ # - template: templates/stages/deploy-stage.yml
+- template: templates/stages/zap-stage.yml
+ # - template: templates/stages/postman-stage.yml

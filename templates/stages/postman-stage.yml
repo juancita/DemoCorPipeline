@@ -1,0 +1,5 @@
+stages:
+  - stage: APITesting
+    displayName: "Pruebas de API con Postman"
+    jobs:
+      - template: ../jobs/postman-job.yml

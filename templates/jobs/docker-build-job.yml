@@ -1,0 +1,5 @@
+jobs:
+  - job: Build_Docker
+    displayName: "Crear Imagen Docker"
+    steps:
+      - template: ../steps/docker-build.yml

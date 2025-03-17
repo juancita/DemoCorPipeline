@@ -1,0 +1,5 @@
+jobs:
+  - job: PublishToACR
+    displayName: "Publicar Imagen en ACR"
+    steps:
+      - template: ../steps/acr-publish.yml

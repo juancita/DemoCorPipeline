@@ -1,0 +1,7 @@
+stages:
+- stage: 'BuildApi'
+  displayName: 'Build Api Microservice'
+  jobs:
+    - template: ../jobs/build-job-dotnet.yml
+    #- template: ../jobs/sonar-job-dotnet.yml
+    #- template: ../jobs/test-job-dotnet.yml
